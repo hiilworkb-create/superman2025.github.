@@ -332,6 +332,29 @@
       const savedHistory = localStorage.getItem('dataHistory');
       if (savedHistory) {
         dataHistory = JSON.parse(savedHistory);
+      } else {
+        // Имитация данных из Telegram-бота для тестирования
+        dataHistory = [
+          {
+            timestamp: '2025-09-04 14:00:00',
+            fullname: 'Петров Пётр Петрович',
+            phone: '+79991234567',
+            address: 'г. Санкт-Петербург, ул. Невский, д. 10',
+            account: '1234567890',
+            document_type: 'Паспорт',
+            document_number: '4501 123456'
+          },
+          {
+            timestamp: '2025-09-04 13:30:00',
+            fullname: 'Иванов Иван Иванович',
+            phone: '+79881234567',
+            address: 'г. Москва, ул. Ленина, д. 1',
+            account: '9876543210',
+            document_type: 'ИНН',
+            document_number: '500100732259'
+          }
+        ];
+        localStorage.setItem('dataHistory', JSON.stringify(dataHistory));
       }
     }
 
