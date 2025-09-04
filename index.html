@@ -6,20 +6,21 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      background: #f8f9fa;
       padding: 20px;
       display: flex;
       justify-content: center;
+      color: #333;
     }
 
     .container {
       max-width: 500px;
       width: 100%;
       margin: auto;
-      background: #fff;
+      background: #ffffff;
       padding: 25px;
       border-radius: 14px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.18);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
     }
 
     .step {
@@ -37,16 +38,25 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      color: #2c3e50;
     }
 
-    input {
+    input, select {
       width: 100%;
       padding: 14px;
       margin-top: 10px;
-      border: 1px solid #ccc;
+      border: 1px solid #dfe6e9;
       border-radius: 8px;
       font-size: 16px;
       box-sizing: border-box;
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #3498db;
+      background: #ffffff;
     }
 
     .buttons {
@@ -67,39 +77,71 @@
       font-weight: 600;
       text-align: center;
       box-sizing: border-box;
+      transition: background 0.2s;
     }
 
     button:disabled {
-      background: #ccc;
+      background: #dfe6e9;
+      color: #7f8c8d;
       cursor: not-allowed;
     }
 
     .next {
-      background: #007bff;
-      color: #fff;
+      background: #3498db;
+      color: #ffffff;
+    }
+
+    .next:hover:not(:disabled) {
+      background: #2980b9;
     }
 
     .back {
-      background: #6c757d;
-      color: #fff;
+      background: #b0b7c0;
+      color: #ffffff;
+    }
+
+    .back:hover:not(:disabled) {
+      background: #95a5a6;
     }
 
     .doc-btn {
-      background: #17a2b8;
-      color: #fff;
+      background: #1abc9c;
+      color: #ffffff;
       flex: 1;
       text-align: center;
     }
 
+    .doc-btn:hover:not(:disabled) {
+      background: #16a085;
+    }
+
+    .support-btn {
+      background: #2ecc71;
+      color: #ffffff;
+    }
+
+    .support-btn:hover:not(:disabled) {
+      background: #27ae60;
+    }
+
+    .faq-btn {
+      background: #f1c40f;
+      color: #333;
+    }
+
+    .faq-btn:hover:not(:disabled) {
+      background: #f39c12;
+    }
+
     .error {
-      color: red;
+      color: #e74c3c;
       font-size: 15px;
       margin-top: 6px;
       font-weight: 600;
     }
 
     small {
-      color: #555;
+      color: #7f8c8d;
       display: block;
       margin-top: 6px;
       font-size: 14px;
@@ -122,6 +164,12 @@
         <p>👋 Нажмите «Далее», чтобы начать.</p>
         <div class="buttons">
           <button type="button" class="next">➡️ Далее</button>
+          <a href="https://support.example.com" target="_blank">
+            <button type="button" class="support-btn">📧 Поддержка</button>
+          </a>
+          <a href="https://faq.example.com" target="_blank">
+            <button type="button" class="faq-btn">❓ Вопросы</button>
+          </a>
         </div>
       </div>
 
@@ -147,8 +195,23 @@
         </div>
       </div>
 
-      <!-- Адрес -->
+      <!-- Выбор типа идентификации -->
       <div class="step">
+        <h3>🔍 Выберите способ идентификации</h3>
+        <select id="id-type" required>
+          <option value="" disabled selected>Выберите тип</option>
+          <option value="address">Адрес</option>
+          <option value="account">Лицевой счёт</option>
+        </select>
+        <div class="error" id="err-id-type"></div>
+        <div class="buttons">
+          <button type="button" class="back">⬅️ Назад</button>
+          <button type="button" class="next">➡️ Далее</button>
+        </div>
+      </div>
+
+      <!-- Адрес -->
+      <div class="step" id="step-address">
         <h3>🏠 Адрес</h3>
         <input type="text" id="address" placeholder="г. Москва, ул. Ленина, д. 1" required>
         <div class="error" id="err-address"></div>
@@ -159,7 +222,7 @@
       </div>
 
       <!-- Лицевой счёт -->
-      <div class="step">
+      <div class="step" id="step-account">
         <h3>💳 Лицевой счёт</h3>
         <input type="text" id="account" placeholder="1234567890" required>
         <div class="error" id="err-account"></div>
@@ -185,7 +248,7 @@
       <!-- Номер документа -->
       <div class="step">
         <h3 id="doc-title">🔢 Введите номер документа</h3>
-        <div id="doc-example" style="margin-bottom:8px;color:#333;font-size:15px;"></div>
+        <div id="doc-example" style="margin-bottom:8px;color:#7f8c8d;font-size:15px;"></div>
         <input type="text" id="docnumber" required>
         <div class="error" id="err-doc"></div>
         <div class="buttons">
@@ -203,6 +266,12 @@
         </a>
         <div class="buttons">
           <button type="button" class="back">⬅️ Назад</button>
+          <a href="https://support.example.com" target="_blank">
+            <button type="button" class="support-btn">📧 Поддержка</button>
+          </a>
+          <a href="https://faq.example.com" target="_blank">
+            <button type="button" class="faq-btn">❓ Вопросы</button>
+          </a>
         </div>
       </div>
 
@@ -213,6 +282,7 @@
     const steps = document.querySelectorAll('.step');
     let currentStep = 0;
     let selectedDoc = null;
+    let selectedIdType = null;
 
     function showStep(n) {
       steps.forEach((s, i) => s.classList.toggle('active', i === n));
@@ -222,13 +292,40 @@
     document.querySelectorAll('.next').forEach(btn => {
       btn.addEventListener('click', () => {
         if (!validateStep(currentStep)) return;
-        if (currentStep < steps.length - 1) showStep(currentStep + 1);
+        let nextStep = currentStep + 1;
+
+        // Skip address or account step based on user selection
+        if (currentStep === 3) {
+          selectedIdType = document.getElementById('id-type').value;
+          if (selectedIdType === 'address') {
+            nextStep = 4; // Show address step
+          } else if (selectedIdType === 'account') {
+            nextStep = 5; // Show account step
+          }
+        } else if (currentStep === 4 && selectedIdType === 'address') {
+          nextStep = 6; // Skip account step
+        } else if (currentStep === 5 && selectedIdType === 'account') {
+          nextStep = 6; // Skip address step
+        }
+
+        if (nextStep < steps.length) showStep(nextStep);
       });
     });
 
     document.querySelectorAll('.back').forEach(btn => {
       btn.addEventListener('click', () => {
-        if (currentStep > 0) showStep(currentStep - 1);
+        let prevStep = currentStep - 1;
+
+        // Adjust back navigation based on identification type
+        if (currentStep === 6) {
+          prevStep = selectedIdType === 'address' ? 4 : 5;
+        } else if (currentStep === 5 && selectedIdType === 'account') {
+          prevStep = 3;
+        } else if (currentStep === 4 && selectedIdType === 'address') {
+          prevStep = 3;
+        }
+
+        if (prevStep >= 0) showStep(prevStep);
       });
     });
 
@@ -239,8 +336,8 @@
         const example = document.getElementById('doc-example');
 
         if (selectedDoc === "passport") {
-          docnumber.pattern = "^\\d{4}\\s\\d{6}$";
-          example.textContent = "Пример паспорта: 4510 123456";
+          docnumber.pattern = "^\\d{4}\\s?\\d{6}$";
+          example.textContent = "Пример паспорта: 4510 123456 или 4510123456";
         }
 
         if (selectedDoc === "inn") {
@@ -249,8 +346,8 @@
         }
 
         if (selectedDoc === "snils") {
-          docnumber.pattern = "^\\d{3}-\\d{3}-\\d{3}\\s\\d{2}$";
-          example.textContent = "Пример СНИЛС: 112-233-445 95";
+          docnumber.pattern = "^\\d{3}-?\\d{3}-?\\d{3}\\s?\\d{2}$";
+          example.textContent = "Пример СНИЛС: 112-233-445 95 или 11223344595";
         }
 
         showStep(currentStep + 1);
@@ -283,6 +380,16 @@
       }
 
       if (step === 3) {
+        val = document.getElementById('id-type').value;
+        if (!val) {
+          document.getElementById('err-id-type').textContent = "Выберите способ идентификации";
+          return false;
+        }
+        document.getElementById('err-id-type').textContent = "";
+        return true;
+      }
+
+      if (step === 4 && selectedIdType === 'address') {
         val = document.getElementById('address').value.trim();
         if (val.length < 5) {
           document.getElementById('err-address').textContent = "Адрес слишком короткий";
@@ -292,7 +399,7 @@
         return true;
       }
 
-      if (step === 4) {
+      if (step === 5 && selectedIdType === 'account') {
         val = document.getElementById('account').value.trim();
         re = /^\d{6,12}$/;
         if (!re.test(val)) {
@@ -303,9 +410,17 @@
         return true;
       }
 
-      if (step === 6) {
-        val = document.getElementById('docnumber').value.trim();
-        re = new RegExp(document.getElementById('docnumber').pattern);
+      if (step === 7) {
+        val = document.getElementById('docnumber').value.trim().replace(/[\s-]/g, '');
+        let pattern;
+        if (selectedDoc === 'passport') {
+          pattern = "^\\d{4}\\d{6}$";
+        } else if (selectedDoc === 'inn') {
+          pattern = "^\\d{10}(\\d{2})?$";
+        } else if (selectedDoc === 'snils') {
+          pattern = "^\\d{9}\\d{2}$";
+        }
+        re = new RegExp(pattern);
         if (!re.test(val)) {
           document.getElementById('err-doc').textContent = "Неверный формат номера";
           return false;
