@@ -13,7 +13,7 @@
     }
 
     .container {
-      max-width: 500px;
+      max-width: 600px;
       width: 100%;
       margin: auto;
       background: #fff;
@@ -108,6 +108,31 @@
     a button {
       width: 100%;
     }
+
+    .data-review {
+      margin-bottom: 18px;
+      color: #333;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .data-history table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+    }
+
+    .data-history th, .data-history td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .data-history th {
+      background: #f8f9fa;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -123,6 +148,7 @@
         <div class="buttons">
           <button type="button" class="next">➡️ Далее</button>
           <button type="button" class="service-btn" data-service="additional">🛠️ Дополнительные услуги</button>
+          <button type="button" class="service-btn" data-service="history">📜 История данных</button>
         </div>
       </div>
 
@@ -249,6 +275,25 @@
         </div>
       </div>
 
+      <!-- Просмотр данных -->
+      <div class="step">
+        <h3>📋 Просмотр данных</h3>
+        <div class="data-review" id="data-review"></div>
+        <div class="buttons">
+          <button type="button" class="back">⬅️ Назад</button>
+          <button type="button" class="next">➡️ Далее</button>
+        </div>
+      </div>
+
+      <!-- История данных -->
+      <div class="step">
+        <h3>📜 История данных</h3>
+        <div class="data-history" id="data-history"></div>
+        <div class="buttons">
+          <button type="button" class="back">⬅️ Назад</button>
+        </div>
+      </div>
+
       <!-- Финал -->
       <div class="step">
         <h3>✅ Всё готово!</h3>
@@ -268,15 +313,105 @@
     const steps = document.querySelectorAll('.step');
     let currentStep = 0;
     let selectedDoc = null;
+    let formData = {
+      fullname: '',
+      phone: '',
+      address: '',
+      account: '',
+      document_type: '',
+      document_number: ''
+    };
+    let dataHistory = [];
+
+    // Load data from localStorage on page load
+    function loadFormData() {
+      const savedData = localStorage.getItem('formData');
+      if (savedData) {
+        formData = JSON.parse(savedData);
+      }
+      const savedHistory = localStorage.getItem('dataHistory');
+      if (savedHistory) {
+        dataHistory = JSON.parse(savedHistory);
+      }
+    }
+
+    // Save data to localStorage
+    function saveFormData() {
+      localStorage.setItem('formData', JSON.stringify(formData));
+    }
+
+    // Save to history
+    function saveToHistory() {
+      const timestamp = new Date().toLocaleString('ru-RU');
+      dataHistory.push({ ...formData, timestamp });
+      localStorage.setItem('dataHistory', JSON.stringify(dataHistory));
+    }
+
+    // Display form data in the review step
+    function displayFormData() {
+      const reviewDiv = document.getElementById('data-review');
+      reviewDiv.innerHTML = `
+        <strong>ФИО:</strong> ${formData.fullname || 'Не указано'}<br>
+        <strong>Телефон:</strong> ${formData.phone || 'Не указано'}<br>
+        <strong>Адрес:</strong> ${formData.address || 'Не указано'}<br>
+        <strong>Лицевой счёт:</strong> ${formData.account || 'Не указано'}<br>
+        <strong>Документ:</strong> ${formData.document_type || 'Не указано'} ${formData.document_number || 'Не указано'}
+      `;
+    }
+
+    // Display history data in the history step
+    function displayHistoryData() {
+      const historyDiv = document.getElementById('data-history');
+      if (dataHistory.length === 0) {
+        historyDiv.innerHTML = '<p>Нет сохранённых данных.</p>';
+        return;
+      }
+      let table = `
+        <table>
+          <tr>
+            <th>Дата</th>
+            <th>ФИО</th>
+            <th>Телефон</th>
+            <th>Адрес</th>
+            <th>Лицевой счёт</th>
+            <th>Документ</th>
+          </tr>
+      `;
+      dataHistory.forEach(record => {
+        table += `
+          <tr>
+            <td>${record.timestamp}</td>
+            <td>${record.fullname || 'Не указано'}</td>
+            <td>${record.phone || 'Не указано'}</td>
+            <td>${record.address || 'Не указано'}</td>
+            <td>${record.account || 'Не указано'}</td>
+            <td>${record.document_type || 'Не указано'} ${record.document_number || 'Не указано'}</td>
+          </tr>
+        `;
+      });
+      table += '</table>';
+      historyDiv.innerHTML = table;
+    }
+
+    // Initialize form data
+    loadFormData();
 
     function showStep(n) {
       steps.forEach((s, i) => s.classList.toggle('active', i === n));
       currentStep = n;
+      if (currentStep === 11) { // Review Data step
+        displayFormData();
+      } else if (currentStep === 12) { // History Data step
+        displayHistoryData();
+      }
     }
 
     document.querySelectorAll('.next').forEach(btn => {
       btn.addEventListener('click', () => {
         if (!validateStep(currentStep)) return;
+        if (currentStep === 6) { // After Document Number
+          saveToHistory(); // Save to history before moving to review
+        }
         if (currentStep < steps.length - 1) showStep(currentStep + 1);
       });
     });
@@ -285,7 +420,13 @@
       btn.addEventListener('click', () => {
         if (currentStep > 0) {
           // Special handling for back navigation
-          if (currentStep === 10) { // Instruction
+          if (currentStep === 13) { // Final step
+            showStep(11); // Back to Review Data
+          } else if (currentStep === 12) { // History Data
+            showStep(0); // Back to Intro
+          } else if (currentStep === 11) { // Review Data
+            showStep(6); // Back to Document Number
+          } else if (currentStep === 10) { // Instruction
             showStep(7); // Back to Additional Services
           } else if (currentStep === 9) { // FAQ Answer
             showStep(8); // Back to FAQ
@@ -303,6 +444,7 @@
     document.querySelectorAll('.doc-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         selectedDoc = btn.dataset.doc;
+        formData.document_type = selectedDoc === 'passport' ? 'Паспорт' : selectedDoc === 'inn' ? 'ИНН' : 'СНИЛС';
         const docnumber = document.getElementById('docnumber');
         const example = document.getElementById('doc-example');
 
@@ -321,6 +463,7 @@
           example.textContent = "Пример СНИЛС: 112-233-445 95";
         }
 
+        saveFormData();
         showStep(currentStep + 1);
       });
     });
@@ -334,6 +477,8 @@
           showStep(8); // FAQ
         } else if (service === "instruction") {
           showStep(10); // Instruction
+        } else if (service === "history") {
+          showStep(12); // History Data
         }
       });
     });
@@ -376,6 +521,8 @@
           return false;
         }
         document.getElementById('err-fullname').textContent = "";
+        formData.fullname = val;
+        saveFormData();
         return true;
       }
 
@@ -387,6 +534,8 @@
           return false;
         }
         document.getElementById('err-phone').textContent = "";
+        formData.phone = val;
+        saveFormData();
         return true;
       }
 
@@ -397,6 +546,8 @@
           return false;
         }
         document.getElementById('err-address').textContent = "";
+        formData.address = val;
+        saveFormData();
         return true;
       }
 
@@ -408,6 +559,8 @@
           return false;
         }
         document.getElementById('err-account').textContent = "";
+        formData.account = val;
+        saveFormData();
         return true;
       }
 
@@ -419,6 +572,8 @@
           return false;
         }
         document.getElementById('err-doc').textContent = "";
+        formData.document_number = val;
+        saveFormData();
         return true;
       }
 
